@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, ArrowUpRight, CalendarDays, Download, Menu, Phone, ShieldCheck, X } from 'lucide-react';
 import { Privacy, Terms, Cookies } from './pages/LegalPages';
-import { EVENT, SPONSORS } from './data/siteConfig';
+import { SITE } from './data/siteConfig';
 
-const categories = [
-  { id: 'open-singles', label: 'Open Singles', players: ['Pruthvi', 'Nadeem', 'Akhilesh', 'Rahul', 'Sudheer', 'Aman', 'Keerthi', 'Pradeep', 'Prafulla Nayak', 'Tarun Akhil', 'Kaushal', 'Saurabh', 'Ashish Singh'] },
-  { id: 'open-doubles', label: 'Open Doubles', players: ['Pruthvi & Naren', 'Nadeem & Zakir', 'Akhilesh & Keerthi', 'Kaushal & Rahul', 'Sourabh & partner', 'Nataraj & Anish', 'Ather & Ahmed', 'Ashish & Jaspreet'] },
-  { id: '40-singles', label: '40+ Singles', players: ['Sudheer', 'Ambadas', 'Sanish', 'Ather', 'Nataraj', 'Srikanth T'] },
-  { id: '40-doubles', label: '40+ Doubles', players: ['Ambadas & Badshah', 'Durga & Nanda', 'Vamsi & Zakir', 'Sanish & Abdul', 'Mahesh & Pradeep', 'Raja & Kamal'] },
-];
+import categoriesData from './content/categories.json';
+import rankingsData from './content/rankings.json';
+import sponsorsData from './content/sponsors.json';
+import eventData from './content/event.json';
+
+const EVENT = eventData;
+const SPONSORS = sponsorsData;
+const categories = categoriesData;
 const totalEntries = categories.reduce((n, c) => n + c.players.length, 0);
 const sampleRankings = {
-  open: [['01', 'Aditya Rao', '2,450'], ['02', 'Karan Mehta', '2,180'], ['03', 'Rishabh Nair', '1,960'], ['04', 'Arjun Menon', '1,840'], ['05', 'Dev Shah', '1,720'], ['06', 'Ishaan Reddy', '1,590']],
-  forty: [['01', 'Rajiv Menon', '2,120'], ['02', 'Suresh Kumar', '1,980'], ['03', 'Vijay Rao', '1,850'], ['04', 'Anil Nair', '1,710'], ['05', 'Prakash Shah', '1,640'], ['06', 'Ramesh Reddy', '1,520']],
+  open: rankingsData.open.map((r) => [r.rank, r.name, r.points]),
+  forty: rankingsData.forty.map((r) => [r.rank, r.name, r.points]),
 };
 const rules = [
   ['Group matches', 'First to 6 games. Tie-break to 7 points at 5–5.'],
@@ -289,7 +291,9 @@ function Rankings() {
                 </tbody>
               </table>
             </div>
-            <p className="note"><ShieldCheck size={15} /> Preview data. Official ITE rankings follow the inaugural championship.</p>
+            {rankingsData.isPreview && (
+              <p className="note"><ShieldCheck size={15} /> Preview data. Official ITE rankings follow the inaugural championship.</p>
+            )}
           </div>
 
           <div className="contact-box" id="contact">

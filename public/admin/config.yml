@@ -1,0 +1,88 @@
+backend:
+  name: github
+  repo: Nuamanjaleel/ite-tennis-excellence
+  branch: main
+  base_url: https://ite-tennis-excellence.vercel.app
+  auth_endpoint: api/auth
+
+media_folder: public
+public_folder: ""
+
+collections:
+  - name: event
+    label: "Event Settings"
+    files:
+      - name: event
+        label: "Event Details"
+        file: src/content/event.json
+        format: json
+        fields:
+          - { label: "Start Date & Time", name: start, widget: datetime }
+          - { label: "Venue", name: venue, widget: string }
+          - { label: "Knockouts Start Time (e.g. 9:00 AM)", name: knockoutsAt, widget: string }
+          - { label: "Rule Book PDF", name: ruleBook, widget: file, media_library: { config: { multiple: false } } }
+          - { label: "Edition Label (e.g. 21–22 Nov)", name: editionLabel, widget: string }
+          - { label: "Event Date Text (e.g. 21 November 2026)", name: eventDate, widget: string }
+
+  - name: categories
+    label: "Participants & Categories"
+    files:
+      - name: categories
+        label: "Categories"
+        file: src/content/categories.json
+        format: json
+        fields:
+          - name: items
+            label: Categories
+            widget: list
+            fields:
+              - { label: "ID (no spaces, e.g. open-singles)", name: id, widget: string }
+              - { label: "Category Name", name: label, widget: string }
+              - name: players
+                label: Players
+                widget: list
+                field: { label: Player, name: player, widget: string }
+
+  - name: rankings
+    label: "Rankings"
+    files:
+      - name: rankings
+        label: "Rankings"
+        file: src/content/rankings.json
+        format: json
+        fields:
+          - { label: "Show as Preview Data", name: isPreview, widget: boolean, default: true }
+          - name: open
+            label: "Men's Open Rankings"
+            widget: list
+            fields:
+              - { label: Rank, name: rank, widget: string }
+              - { label: Player, name: name, widget: string }
+              - { label: Points, name: points, widget: string }
+          - name: forty
+            label: "Men's 40+ Rankings"
+            widget: list
+            fields:
+              - { label: Rank, name: rank, widget: string }
+              - { label: Player, name: name, widget: string }
+              - { label: Points, name: points, widget: string }
+
+  - name: sponsors
+    label: "Sponsors"
+    files:
+      - name: sponsors
+        label: "Sponsors"
+        file: src/content/sponsors.json
+        format: json
+        fields:
+          - name: items
+            label: Sponsors
+            widget: list
+            fields:
+              - { label: Role, name: role, widget: string }
+              - { label: Name, name: name, widget: string }
+              - { label: Logo Image, name: image, widget: image }
+              - name: cls
+                label: "Pin Position"
+                widget: select
+                options: ["pin-a", "pin-b", "pin-c"]
