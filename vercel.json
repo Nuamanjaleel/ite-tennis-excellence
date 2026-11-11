@@ -1,5 +1,11 @@
 {
   "framework": "vite",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "routes": [
+    { "src": "/admin/config.yml", "dest": "/admin/config.yml" },
+    { "src": "/admin/(.*)", "dest": "/admin/$1" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
 }
 

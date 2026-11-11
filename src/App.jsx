@@ -9,8 +9,8 @@ import sponsorsData from './content/sponsors.json';
 import eventData from './content/event.json';
 
 const EVENT = eventData;
-const SPONSORS = sponsorsData;
-const categories = categoriesData;
+const SPONSORS = sponsorsData.items;
+const categories = categoriesData.items;
 const totalEntries = categories.reduce((n, c) => n + c.players.length, 0);
 const sampleRankings = {
   open: rankingsData.open.map((r) => [r.rank, r.name, r.points]),

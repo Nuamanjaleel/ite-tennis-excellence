@@ -86,3 +86,4 @@ collections:
                 label: "Pin Position"
                 widget: select
                 options: ["pin-a", "pin-b", "pin-c"]
+

@@ -8,3 +8,4 @@ export default function handler(req, res) {
   });
   res.redirect(`https://github.com/login/oauth/authorize?${params}`);
 }
+
