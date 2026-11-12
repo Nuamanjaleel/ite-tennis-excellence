@@ -17,12 +17,34 @@ collections:
         file: src/content/event.json
         format: json
         fields:
-          - { label: "Start Date & Time", name: start, widget: datetime }
+          - {
+              label: "Edition name (e.g. Edition 02)",
+              name: edition,
+              widget: string,
+            }
+          - {
+              label: "First day and start time (drives the countdown and all dates shown)",
+              name: start,
+              widget: datetime,
+            }
+          - {
+              label: "Last day (leave empty for a one day event)",
+              name: end,
+              widget: datetime,
+              required: false,
+            }
           - { label: "Venue", name: venue, widget: string }
-          - { label: "Knockouts Start Time (e.g. 9:00 AM)", name: knockoutsAt, widget: string }
-          - { label: "Rule Book PDF", name: ruleBook, widget: file, media_library: { config: { multiple: false } } }
-          - { label: "Edition Label (e.g. 21–22 Nov)", name: editionLabel, widget: string }
-          - { label: "Event Date Text (e.g. 21 November 2026)", name: eventDate, widget: string }
+          - {
+              label: "Knockouts Start Time (e.g. 9:00 AM)",
+              name: knockoutsAt,
+              widget: string,
+            }
+          - {
+              label: "Rule Book PDF",
+              name: ruleBook,
+              widget: file,
+              media_library: { config: { multiple: false } },
+            }
 
   - name: categories
     label: "Participants & Categories"
@@ -36,7 +58,12 @@ collections:
             label: Categories
             widget: list
             fields:
-              - { label: "ID (no spaces, e.g. open-singles)", name: id, widget: string }
+              - {
+                  label: "ID (optional, leave blank)",
+                  name: id,
+                  widget: string,
+                  required: false,
+                }
               - { label: "Category Name", name: label, widget: string }
               - name: players
                 label: Players
@@ -51,21 +78,26 @@ collections:
         file: src/content/rankings.json
         format: json
         fields:
-          - { label: "Show as Preview Data", name: isPreview, widget: boolean, default: true }
-          - name: open
-            label: "Men's Open Rankings"
+          - {
+              label: "Show as Preview Data",
+              name: isPreview,
+              widget: boolean,
+              default: true,
+            }
+          - name: tables
+            label: "Ranking tables (add one per category, e.g. Women's Open)"
             widget: list
+            summary: "{{fields.label}}"
             fields:
-              - { label: Rank, name: rank, widget: string }
-              - { label: Player, name: name, widget: string }
-              - { label: Points, name: points, widget: string }
-          - name: forty
-            label: "Men's 40+ Rankings"
-            widget: list
-            fields:
-              - { label: Rank, name: rank, widget: string }
-              - { label: Player, name: name, widget: string }
-              - { label: Points, name: points, widget: string }
+              - { label: "Table name", name: label, widget: string }
+              - name: rows
+                label: "Players in rank order"
+                widget: list
+                summary: "{{fields.rank}}. {{fields.name}}"
+                fields:
+                  - { label: Rank, name: rank, widget: string }
+                  - { label: Player, name: name, widget: string }
+                  - { label: Points, name: points, widget: string }
 
   - name: sponsors
     label: "Sponsors"
@@ -76,8 +108,9 @@ collections:
         format: json
         fields:
           - name: items
-            label: Sponsors
+            label: "Sponsors (maximum 3, each needs a different Pin Position)"
             widget: list
+            max: 3
             fields:
               - { label: Role, name: role, widget: string }
               - { label: Name, name: name, widget: string }
@@ -87,3 +120,35 @@ collections:
                 widget: select
                 options: ["pin-a", "pin-b", "pin-c"]
 
+  - name: contact
+    label: "Contact"
+    files:
+      - name: contact
+        label: "Contact Details"
+        file: src/content/contact.json
+        format: json
+        fields:
+          - {
+              label: "Main email (also shown on Privacy, Terms and Cookies pages)",
+              name: email,
+              widget: string,
+              required: false,
+            }
+          - name: people
+            label: "Contact people"
+            widget: list
+            summary: "{{fields.name}}"
+            fields:
+              - { label: Name, name: name, widget: string }
+              - {
+                  label: "Phone (10 digits, e.g. 99087 44544)",
+                  name: phone,
+                  widget: string,
+                  required: false,
+                }
+              - {
+                  label: "Email (optional)",
+                  name: email,
+                  widget: string,
+                  required: false,
+                }

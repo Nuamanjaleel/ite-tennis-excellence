@@ -1,20 +1,75 @@
 {
   "isPreview": true,
-  "open": [
-    { "rank": "01", "name": "Aditya Rao", "points": "2,450" },
-    { "rank": "02", "name": "Karan Mehta", "points": "2,180" },
-    { "rank": "03", "name": "Rishabh Nair", "points": "1,960" },
-    { "rank": "04", "name": "Arjun Menon", "points": "1,840" },
-    { "rank": "05", "name": "Dev Shah", "points": "1,720" },
-    { "rank": "06", "name": "Ishaan Reddy", "points": "1,590" }
-  ],
-  "forty": [
-    { "rank": "01", "name": "Rajiv Menon", "points": "2,120" },
-    { "rank": "02", "name": "Suresh Kumar", "points": "1,980" },
-    { "rank": "03", "name": "Vijay Rao", "points": "1,850" },
-    { "rank": "04", "name": "Anil Nair", "points": "1,710" },
-    { "rank": "05", "name": "Prakash Shah", "points": "1,640" },
-    { "rank": "06", "name": "Ramesh Reddy", "points": "1,520" }
+  "tables": [
+    {
+      "label": "Men's Open",
+      "rows": [
+        {
+          "rank": "01",
+          "name": "Aditya Rao",
+          "points": "2,450"
+        },
+        {
+          "rank": "02",
+          "name": "Karan Mehta",
+          "points": "2,180"
+        },
+        {
+          "rank": "03",
+          "name": "Rishabh Nair",
+          "points": "1,960"
+        },
+        {
+          "rank": "04",
+          "name": "Arjun Menon",
+          "points": "1,840"
+        },
+        {
+          "rank": "05",
+          "name": "Dev Shah",
+          "points": "1,720"
+        },
+        {
+          "rank": "06",
+          "name": "Ishaan Reddy",
+          "points": "1,590"
+        }
+      ]
+    },
+    {
+      "label": "Men's 40+",
+      "rows": [
+        {
+          "rank": "01",
+          "name": "Rajiv Menon",
+          "points": "2,120"
+        },
+        {
+          "rank": "02",
+          "name": "Suresh Kumar",
+          "points": "1,980"
+        },
+        {
+          "rank": "03",
+          "name": "Vijay Rao",
+          "points": "1,850"
+        },
+        {
+          "rank": "04",
+          "name": "Anil Nair",
+          "points": "1,710"
+        },
+        {
+          "rank": "05",
+          "name": "Prakash Shah",
+          "points": "1,640"
+        },
+        {
+          "rank": "06",
+          "name": "Ramesh Reddy",
+          "points": "1,520"
+        }
+      ]
+    }
   ]
 }
-

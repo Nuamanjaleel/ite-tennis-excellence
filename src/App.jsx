@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowRight, ArrowUpRight, CalendarDays, Download, Menu, Phone, ShieldCheck, X } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, CalendarDays, Download, Mail, Menu, Phone, ShieldCheck, X } from 'lucide-react';
 import { Privacy, Terms, Cookies } from './pages/LegalPages';
 import { SITE } from './data/siteConfig';
 
@@ -7,15 +7,52 @@ import categoriesData from './content/categories.json';
 import rankingsData from './content/rankings.json';
 import sponsorsData from './content/sponsors.json';
 import eventData from './content/event.json';
+import contactData from './content/contact.json';
+
+// Makes sure an image or file path from the admin always starts with "/"
+const asset = (p) => (!p ? '' : /^(https?:)?\/\//.test(p) || p.startsWith('/') ? p : `/${p}`);
 
 const EVENT = eventData;
-const SPONSORS = sponsorsData.items;
-const categories = categoriesData.items;
+const RULEBOOK = asset(EVENT.ruleBook);
+const SPONSORS = (sponsorsData.items || []).slice(0, 3);
+const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const categories = categoriesData.items.map((c) => ({ ...c, id: c.id || slug(c.label) }));
 const totalEntries = categories.reduce((n, c) => n + c.players.length, 0);
-const sampleRankings = {
-  open: rankingsData.open.map((r) => [r.rank, r.name, r.points]),
-  forty: rankingsData.forty.map((r) => [r.rank, r.name, r.points]),
+const PEOPLE = contactData.people || [];
+const telHref = (p) => {
+  const d = String(p).replace(/\D/g, '');
+  return `tel:+${d.length === 10 ? '91' + d : d}`;
 };
+
+// Dates are worked out from the start and end dates set in the admin, always in India time
+const dateParts = (iso) => {
+  try {
+    const f = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'long', year: 'numeric' });
+    const p = Object.fromEntries(f.formatToParts(new Date(iso)).map((x) => [x.type, x.value]));
+    return { d: p.day, m: p.month, y: p.year };
+  } catch (e) {
+    return null;
+  }
+};
+const fullDate = (iso) => {
+  const p = dateParts(iso);
+  return p ? `${p.d} ${p.m} ${p.y}` : '';
+};
+const shortDates = (a, b) => {
+  const s = dateParts(a);
+  if (!s) return '';
+  const e = b ? dateParts(b) : null;
+  const sm = s.m.slice(0, 3);
+  if (!e || (e.d === s.d && e.m === s.m && e.y === s.y)) return `${s.d} ${sm}`;
+  if (e.m === s.m && e.y === s.y) return `${s.d}–${e.d} ${sm}`;
+  return `${s.d} ${sm} – ${e.d} ${e.m.slice(0, 3)}`;
+};
+
+// Works with the old two-table rankings file and the newer list of tables
+const RANK_TABLES = rankingsData.tables || [
+  { label: "Men's Open", rows: rankingsData.open || [] },
+  { label: "Men's 40+", rows: rankingsData.forty || [] },
+];
 const rules = [
   ['Group matches', 'First to 6 games. Tie-break to 7 points at 5–5.'],
   ['Quarter and semi finals', 'First to 6 games. Tie-break to 7 points at 5–5.'],
@@ -79,7 +116,7 @@ function Header() {
               {l}<ArrowRight size={18} />
             </a>
           ))}
-          <a className="pill pill-lime" href={EVENT.ruleBook} target="_blank" rel="noreferrer">
+          <a className="pill pill-lime" href={RULEBOOK} target="_blank" rel="noreferrer">
             Rule book <Download size={16} />
           </a>
         </nav>
@@ -104,8 +141,8 @@ function Hero() {
         </div>
         <a className="card card-photo" href="#participants" aria-label="Meet the players">
           <div>
-            <small>Edition 01</small>
-            <strong>21–22 Nov</strong>
+            <small>{EVENT.edition}</small>
+            <strong>{shortDates(EVENT.start, EVENT.end)}</strong>
             <span className="round-arrow"><ArrowUpRight size={14} /></span>
           </div>
           <img src="/schedule-img.jpg" alt="" />
@@ -114,7 +151,7 @@ function Hero() {
           <h2>Discover the championship</h2>
           <div className="chips">
             {chips.map((c) => <span key={c}>{c}</span>)}
-            <span className="chip-count">4 categories</span>
+            <span className="chip-count">{categories.length} categories</span>
           </div>
           <a href="#participants">Explore</a>
         </div>
@@ -123,11 +160,11 @@ function Hero() {
             <h3>Players entered</h3>
             <span className="round-arrow"><ArrowUpRight size={14} /></span>
           </div>
-          <small>Across all four categories</small>
+          <small>Across all categories</small>
           <strong>{totalEntries}</strong>
           <em>Entries confirmed so far</em>
         </div>
-        <a className="card card-video" href={EVENT.ruleBook} target="_blank" rel="noreferrer">
+        <a className="card card-video" href={RULEBOOK} target="_blank" rel="noreferrer">
           <div>
             <span className="tag">Rule book</span>
             <h3>Know the rules before you step on court</h3>
@@ -140,7 +177,7 @@ function Hero() {
         <div>
           {Array.from({ length: 2 }).map((_, i) => (
             <div key={i}>
-              {['ITE', 'TENNIS', 'EXCELLENCE', 'CHAMPIONSHIP', 'EDITION 01'].map((w) => (
+              {['ITE', 'TENNIS', 'EXCELLENCE', 'CHAMPIONSHIP', (EVENT.edition || '').toUpperCase()].map((w) => (
                 <span key={w + i}>{w}<i>✦</i></span>
               ))}
             </div>
@@ -163,7 +200,7 @@ function Countdown() {
             <div className="count-card-row">
               <div>
                 <small>{EVENT.venue}</small>
-                <strong>21 November 2026</strong>
+                <strong>{fullDate(EVENT.start)}</strong>
               </div>
               <div className="count-box-wrap">
                 <small>{c.started ? 'Under way' : 'Starts in'}</small>
@@ -183,9 +220,9 @@ function Countdown() {
         <div className="count-mid"><img src="/count-mid.jpg" alt="" /></div>
         <a className="pill pill-dark pill-block count-cta" href="#participants">Start serving success</a>
         <div className="count-info">
-          <p>Knockouts commence at <b>{EVENT.knockoutsAt}</b>. Two days, four categories, no coaching, and every player calls their own lines.</p>
+          <p>Knockouts commence at <b>{EVENT.knockoutsAt}</b>. No coaching, and every player calls their own lines.</p>
           <ul>{rules.map(([t, d]) => <li key={t}><b>{t}</b><span>{d}</span></li>)}</ul>
-          <a className="pill pill-dark" href={EVENT.ruleBook} target="_blank" rel="noreferrer">
+          <a className="pill pill-dark" href={RULEBOOK} target="_blank" rel="noreferrer">
             Download the rule book <Download size={16} />
           </a>
         </div>
@@ -203,10 +240,10 @@ function Sponsors() {
           <a className="menu-pill" href="#about">Menu <i /></a>
         </div>
 
-        {/* The 3 main sponsor images */}
-        <img className="spons-photo sp-1" src="/redbull.png" alt="Red Bull" />
-        <img className="spons-photo sp-2" src="/gatorade.png" alt="Gatorade" />
-        <img className="spons-photo sp-3" src="/wilson.png" alt="Wilson" />
+        {/* Sponsor logos, taken from the admin (first three sponsors) */}
+        {SPONSORS.map((s, i) => (
+          <img key={s.name + i} className={`spons-photo sp-${i + 1}`} src={asset(s.image)} alt={s.name} />
+        ))}
 
         <div className="spons-hero">
           <img src="/spons-center.jpg" alt="Tennis player" />
@@ -220,13 +257,13 @@ function Sponsors() {
 
         {/* Mobile sponsor logo row */}
         <div className="spons-mobile-bar">
-          <img src="/redbull.png" alt="Red Bull" />
-          <img src="/gatorade.png" alt="Gatorade" />
-          <img src="/wilson.png" alt="Wilson" />
+          {SPONSORS.map((s, i) => (
+            <img key={s.name + i} src={asset(s.image)} alt={s.name} />
+          ))}
         </div>
 
         <div className="spons-text">
-          <p>The partners backing Edition 01 of the Tennis Excellence Championship, and the players who compete in it.</p>
+          <p>The partners backing {EVENT.edition} of the Tennis Excellence Championship, and the players who compete in it.</p>
           <a href="#about">Discover more</a>
         </div>
       </div>
@@ -235,8 +272,9 @@ function Sponsors() {
 }
 
 function Participants() {
-  const [active, setActive] = useState(categories[0].id);
-  const sel = categories.find((c) => c.id === active);
+  const [active, setActive] = useState(categories[0]?.id);
+  const sel = categories.find((c) => c.id === active) || categories[0];
+  if (!sel) return null;
   return (
     <section className="light-section" id="participants">
       <div className="page-wrap">
@@ -247,7 +285,7 @@ function Participants() {
               <button
                 key={c.id}
                 role="tab"
-                aria-selected={active === c.id}
+                aria-selected={sel.id === c.id}
                 onClick={() => setActive(c.id)}
               >
                 {c.label}<span>{pad(c.players.length)}</span>
@@ -255,7 +293,7 @@ function Participants() {
             ))}
           </div>
           <div className="panel" role="tabpanel">
-            <ol>{sel.players.map((p, i) => <li key={p}><span>{pad(i + 1)}</span>{p}</li>)}</ol>
+            <ol>{sel.players.map((p, i) => <li key={p + i}><span>{pad(i + 1)}</span>{p}</li>)}</ol>
             <p className="note">Entry list supplied by ITE. Contact the organiser for entry updates.</p>
           </div>
         </div>
@@ -265,7 +303,9 @@ function Participants() {
 }
 
 function Rankings() {
-  const [cat, setCat] = useState('open');
+  const [idx, setIdx] = useState(0);
+  const table = RANK_TABLES[idx] || RANK_TABLES[0];
+  const rows = (table && table.rows) || [];
   return (
     <section className="dark-section" id="rankings">
       <div className="page-wrap">
@@ -273,9 +313,9 @@ function Rankings() {
         <div className="rankings-grid">
           <div className="rank-card">
             <div className="tabs tabs-row" role="tablist">
-              {[['open', "Men's Open"], ['forty', "Men's 40+"]].map(([k, l]) => (
-                <button key={k} role="tab" aria-selected={cat === k} onClick={() => setCat(k)}>
-                  {l}
+              {RANK_TABLES.map((t, i) => (
+                <button key={t.label + i} role="tab" aria-selected={idx === i} onClick={() => setIdx(i)}>
+                  {t.label}
                 </button>
               ))}
             </div>
@@ -285,14 +325,14 @@ function Rankings() {
                   <tr><th>Rank</th><th>Player</th><th>Points</th></tr>
                 </thead>
                 <tbody>
-                  {sampleRankings[cat].map(([r, n, p]) => (
-                    <tr key={n}><td>{r}</td><td>{n}</td><td>{p}</td></tr>
+                  {rows.map((r, i) => (
+                    <tr key={r.name + i}><td>{r.rank}</td><td>{r.name}</td><td>{r.points}</td></tr>
                   ))}
                 </tbody>
               </table>
             </div>
             {rankingsData.isPreview && (
-              <p className="note"><ShieldCheck size={15} /> Preview data. Official ITE rankings follow the inaugural championship.</p>
+              <p className="note"><ShieldCheck size={15} /> Preview data. Official ITE rankings will be published here once confirmed.</p>
             )}
           </div>
 
@@ -300,18 +340,29 @@ function Rankings() {
             <h3>Get in touch</h3>
             <p>For championship inquiries, registration updates, and partnerships:</p>
             <div className="contact-card-list">
-              <div className="contact-person-card">
-                <span className="contact-person-name">Pruthvi</span>
-                <a className="contact-person-phone" href="tel:+919908744544">
-                  <Phone size={14} /> 99087 44544
-                </a>
-              </div>
-              <div className="contact-person-card">
-                <span className="contact-person-name">Visakh VS</span>
-                <a className="contact-person-phone" href="tel:+919908642864">
-                  <Phone size={14} /> 99086 42864
-                </a>
-              </div>
+              {PEOPLE.map((p, i) => (
+                <div className="contact-person-card" key={p.name + i}>
+                  <span className="contact-person-name">{p.name}</span>
+                  {p.phone && (
+                    <a className="contact-person-phone" href={telHref(p.phone)}>
+                      <Phone size={14} /> {p.phone}
+                    </a>
+                  )}
+                  {p.email && (
+                    <a className="contact-person-phone" href={`mailto:${p.email}`}>
+                      <Mail size={14} /> {p.email}
+                    </a>
+                  )}
+                </div>
+              ))}
+              {contactData.email && (
+                <div className="contact-person-card">
+                  <span className="contact-person-name">Email</span>
+                  <a className="contact-person-phone" href={`mailto:${contactData.email}`}>
+                    <Mail size={14} /> {contactData.email}
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -327,7 +378,7 @@ function About() {
         <h2 className="sec-title">More than a match</h2>
         <div>
           <p className="lead">ITE stands for Tennis Excellence, a platform for players who believe the game is always worth getting better at.</p>
-          <p>Built around competition, community and respect for the sport, ITE brings players together through organised events. The inaugural championship at {EVENT.venue} marks the beginning.</p>
+          <p>Built around competition, community and respect for the sport, ITE brings players together through organised events. {EVENT.edition} of the championship takes place at {EVENT.venue}.</p>
         </div>
       </div>
     </section>
@@ -341,11 +392,19 @@ function Footer() {
         <div className="footer-main">
           <a href="#home" className="brand-logo"><img src="/ite-logo.png" alt="ITE" /></a>
           <p>Built for the love of tennis. Driven by the pursuit of excellence.</p>
-          <div className="footer-contacts">
-            <span>Contact: <b>Pruthvi</b> <a href="tel:+919908744544">99087 44544</a></span>
-            <span className="footer-sep">•</span>
-            <span><b>Visakh VS</b> <a href="tel:+919908642864">99086 42864</a></span>
-          </div>
+          {PEOPLE.length > 0 && (
+            <div className="footer-contacts">
+              {PEOPLE.map((p, i) => (
+                <React.Fragment key={p.name + i}>
+                  {i > 0 && <span className="footer-sep">•</span>}
+                  <span>
+                    {i === 0 && 'Contact: '}<b>{p.name}</b>{' '}
+                    {p.phone && <a href={telHref(p.phone)}>{p.phone}</a>}
+                  </span>
+                </React.Fragment>
+              ))}
+            </div>
+          )}
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} ITE Tennis Excellence</span>
