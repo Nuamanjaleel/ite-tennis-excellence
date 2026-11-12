@@ -45,6 +45,25 @@ collections:
               widget: file,
               media_library: { config: { multiple: false } },
             }
+          - {
+              label: "Tournament poster (shown on the Championship section)",
+              name: poster,
+              widget: image,
+              required: false,
+            }
+          - {
+              label: "Registration is open (turn off after the deadline)",
+              name: registrationOpen,
+              widget: boolean,
+              default: true,
+            }
+          - {
+              label: "Registration form link (must start with https://)",
+              name: registrationUrl,
+              widget: string,
+              required: false,
+              pattern: ["^https?://", "Must start with https://"],
+            }
 
   - name: categories
     label: "Participants & Categories"
@@ -108,17 +127,27 @@ collections:
         format: json
         fields:
           - name: items
-            label: "Sponsors (maximum 3, each needs a different Pin Position)"
+            label: "Sponsors (maximum 4)"
             widget: list
-            max: 3
+            max: 4
+            hint: "Logo cards show only for the first three sponsors that have a logo. Sponsors without a logo still get their name box."
             fields:
               - { label: Role, name: role, widget: string }
               - { label: Name, name: name, widget: string }
-              - { label: Logo Image, name: image, widget: image }
+              - {
+                  label: "Logo Image (optional)",
+                  name: image,
+                  widget: image,
+                  required: false,
+                }
               - name: cls
-                label: "Pin Position"
+                label: "Position on the photo (desktop)"
                 widget: select
-                options: ["pin-a", "pin-b", "pin-c"]
+                options:
+                  - { label: "1st (top)", value: "pin-a" }
+                  - { label: "2nd", value: "pin-d" }
+                  - { label: "3rd", value: "pin-b" }
+                  - { label: "4th (bottom)", value: "pin-c" }
 
   - name: contact
     label: "Contact"

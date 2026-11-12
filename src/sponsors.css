@@ -1,0 +1,26 @@
+/* Position of the 4th sponsor box (Associate Sponsor), above the Gatorade box on desktop */
+@media (min-width: 1024px) {
+    .pin-d {
+        left: calc(62% - 7px);
+        top: 162px;
+    }
+
+    /* Associate Sponsor logo card: same width and right edge as the Gatorade card, sitting just above it */
+    .spons-photo.sp-4 {
+        right: 12%;
+        top: 35px;
+        width: 230px;
+        height: 110px;
+        padding: 12px 16px;
+    }
+}
+
+/* Mobile logo row: let four logos wrap onto two lines instead of getting squashed */
+.spons-mobile-bar {
+    flex-wrap: wrap;
+}
+
+.spons-mobile-bar img {
+    flex: 1 1 40%;
+    max-width: 150px;
+}

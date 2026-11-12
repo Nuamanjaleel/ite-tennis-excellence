@@ -1,8 +1,28 @@
 {
   "items": [
-    { "role": "Title Sponsor", "name": "Redbull", "image": "/redbull.png", "cls": "pin-a" },
-    { "role": "Hydration", "name": "Gatorade", "image": "/gatorade.png", "cls": "pin-b" },
-    { "role": "Equipment", "name": "Wilson", "image": "/wilson.png", "cls": "pin-c" }
+    {
+      "role": "Title Sponsor",
+      "name": "Redbull",
+      "image": "/redbull.png",
+      "cls": "pin-a"
+    },
+    {
+      "role": "Associate Sponsor",
+      "name": "Economy Surgicals",
+      "image": "/economy.png",
+      "cls": "pin-d"
+    },
+    {
+      "role": "Hydration",
+      "name": "Gatorade",
+      "image": "/gatorade.png",
+      "cls": "pin-b"
+    },
+    {
+      "role": "Equipment",
+      "name": "Wilson",
+      "image": "/wilson.png",
+      "cls": "pin-c"
+    }
   ]
 }
-

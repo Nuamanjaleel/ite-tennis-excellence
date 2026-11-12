@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { ArrowRight, ArrowUpRight, CalendarDays, Download, Mail, Menu, Phone, ShieldCheck, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { ArrowRight, ArrowUpRight, CalendarDays, Download, Mail, Menu, Phone, ShieldCheck, X, ZoomIn } from 'lucide-react';
 import { Privacy, Terms, Cookies } from './pages/LegalPages';
 import { SITE } from './data/siteConfig';
+import './poster.css';
+import './sponsors.css';
 
 import categoriesData from './content/categories.json';
 import rankingsData from './content/rankings.json';
@@ -14,7 +17,14 @@ const asset = (p) => (!p ? '' : /^(https?:)?\/\//.test(p) || p.startsWith('/') ?
 
 const EVENT = eventData;
 const RULEBOOK = asset(EVENT.ruleBook);
-const SPONSORS = (sponsorsData.items || []).slice(0, 3);
+const POSTER = asset(EVENT.poster);
+// Registration is open unless switched off in the admin (or no form link is set)
+const REG_OPEN = EVENT.registrationOpen !== false && !!EVENT.registrationUrl;
+const SPONSORS = (sponsorsData.items || []).slice(0, 4);
+// CHANGED: Logo cards are shown only for sponsors that have a logo image (up to four)
+const LOGOS = SPONSORS.filter((s) => s.image).slice(0, 4);
+// CHANGED: Each logo card sits in a fixed slot matched to its pin box, so adding a logo never moves the others
+const LOGO_SLOT = { 'pin-a': 'sp-1', 'pin-b': 'sp-2', 'pin-c': 'sp-3', 'pin-d': 'sp-4' };
 const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const categories = categoriesData.items.map((c) => ({ ...c, id: c.id || slug(c.label) }));
 const totalEntries = categories.reduce((n, c) => n + c.players.length, 0);
@@ -126,7 +136,7 @@ function Header() {
 }
 
 function Hero() {
-  const chips = ['Group stage', `Knockouts ${EVENT.knockoutsAt}`, 'No coaching'];
+  const chips = ['Group stage', `Knockouts ${EVENT.knockoutsAt}`, 'No coaches'];
   return (
     <section className="hero" id="home">
       <img className="hero-photo" src="/hero-bg.jpg" alt="Tennis player serving on court" />
@@ -188,6 +198,61 @@ function Hero() {
   );
 }
 
+// Poster thumbnail that opens a full-screen viewer (tap the poster to zoom in or out)
+function Poster() {
+  const [open, setOpen] = useState(false);
+  const [zoom, setZoom] = useState(false);
+  const triggerRef = useRef(null);
+  const closeRef = useRef(null);
+
+  const close = () => {
+    setOpen(false);
+    setZoom(false);
+    if (triggerRef.current) triggerRef.current.focus();
+  };
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    if (closeRef.current) closeRef.current.focus();
+    const onKey = (e) => { if (e.key === 'Escape') close(); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  if (!POSTER) return null;
+  const alt = `${EVENT.edition} tournament poster`;
+  return (
+    <>
+      <button type="button" ref={triggerRef} className="poster-btn" onClick={() => setOpen(true)} aria-label={`View the ${EVENT.edition} poster full size`}>
+        <img src={POSTER} alt={alt} />
+        <span className="poster-hint"><ZoomIn size={14} /> Tap to enlarge</span>
+      </button>
+      {open && createPortal(
+        <div className="poster-modal" role="dialog" aria-modal="true" aria-label="Tournament poster">
+          <button type="button" ref={closeRef} className="poster-close" onClick={close} aria-label="Close poster"><X size={22} /></button>
+          <div className={`poster-scroll${zoom ? ' is-zoomed' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) close(); }}>
+            <img
+              className="poster-img"
+              src={POSTER}
+              alt={alt}
+              tabIndex={0}
+              onClick={() => setZoom(!zoom)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setZoom(!zoom); } }}
+            />
+          </div>
+          <div className="poster-tip">{zoom ? 'Tap the poster to zoom out' : 'Tap the poster to zoom in'}</div>
+        </div>,
+        document.body
+      )}
+    </>
+  );
+}
+
 function Countdown() {
   const c = useCountdown();
   return (
@@ -217,8 +282,14 @@ function Countdown() {
           <h2>Push<br />your<br />limits,</h2>
           <p>Ace your game.<br />Master every swing.</p>
         </div>
-        <div className="count-mid"><img src="/count-mid.jpg" alt="" /></div>
-        <a className="pill pill-dark pill-block count-cta" href="#participants">Start serving success</a>
+        <div className="count-mid"><Poster /></div>
+        {REG_OPEN ? (
+          <a className="pill pill-dark pill-block count-cta" href={EVENT.registrationUrl} target="_blank" rel="noopener noreferrer">
+            Register now <ArrowUpRight size={16} />
+          </a>
+        ) : (
+          <a className="pill pill-dark pill-block count-cta" href="#participants">See the players</a>
+        )}
         <div className="count-info">
           <p>Knockouts commence at <b>{EVENT.knockoutsAt}</b>. No coaching, and every player calls their own lines.</p>
           <ul>{rules.map(([t, d]) => <li key={t}><b>{t}</b><span>{d}</span></li>)}</ul>
@@ -240,9 +311,14 @@ function Sponsors() {
           <a className="menu-pill" href="#about">Menu <i /></a>
         </div>
 
-        {/* Sponsor logos, taken from the admin (first three sponsors) */}
-        {SPONSORS.map((s, i) => (
-          <img key={s.name + i} className={`spons-photo sp-${i + 1}`} src={asset(s.image)} alt={s.name} />
+        {/* Sponsor logos, taken from the admin (up to four sponsors with a logo) */}
+        {LOGOS.map((s, i) => (
+          <img
+            key={s.name + i}
+            className={`spons-photo ${LOGO_SLOT[s.cls] || `sp-${i + 1}`}`}
+            src={asset(s.image)}
+            alt={s.name}
+          />
         ))}
 
         <div className="spons-hero">
@@ -257,7 +333,7 @@ function Sponsors() {
 
         {/* Mobile sponsor logo row */}
         <div className="spons-mobile-bar">
-          {SPONSORS.map((s, i) => (
+          {LOGOS.map((s, i) => (
             <img key={s.name + i} src={asset(s.image)} alt={s.name} />
           ))}
         </div>

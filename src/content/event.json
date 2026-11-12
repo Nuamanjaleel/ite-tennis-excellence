@@ -4,5 +4,8 @@
   "venue": "ProDynamiQ, Khanapur",
   "knockoutsAt": "9:00 AM",
   "ruleBook": "/ITE-Tennis-Excellence-Rule-Book.pdf",
-  "edition": "Edition 01"
+  "edition": "Edition 01",
+  "poster": "/ite-poster.jpg",
+  "registrationOpen": true,
+  "registrationUrl": "https://forms.gle/3RfReaW7L4QJdKQs6"
 }
