@@ -3,23 +3,67 @@
     {
       "id": "open-singles",
       "label": "Open Singles",
-      "players": ["Pruthvi", "Nadeem", "Akhilesh", "Rahul", "Sudheer", "Aman", "Keerthi", "Pradeep", "Prafulla Nayak", "Tarun Akhil", "Kaushal", "Saurabh", "Ashish Singh"]
+      "players": [
+        "Pruthvi",
+        "Nadeem",
+        "Akhilesh",
+        "Rahul",
+        "Sudheer",
+        "Aman",
+        "Keerthi",
+        "Pradeep",
+        "Prafulla Nayak",
+        "Tarun Akhil",
+        "Kaushal",
+        "Saurabh",
+        "Ashish Singh",
+        "Ahmed",
+        "Sridhar M",
+        "⁠Rupesh Nellore",
+        "Shanmukh",
+        "Sharat"
+      ]
     },
     {
       "id": "open-doubles",
       "label": "Open Doubles",
-      "players": ["Pruthvi & Naren", "Nadeem & Zakir", "Akhilesh & Keerthi", "Kaushal & Rahul", "Sourabh & partner", "Nataraj & Anish", "Ather & Ahmed", "Ashish & Jaspreet"]
+      "players": [
+        "Pruthvi & Naren",
+        "Nadeem & Zakir",
+        "Akhilesh & Keerthi",
+        "Kaushal & Rahul",
+        "Sourabh & partner",
+        "Nataraj & Anish",
+        "Ather & Ahmed",
+        "Ashish & Jaspreet",
+        "Shanmukh & Sharath",
+        "Akhil & Karthik"
+      ]
     },
     {
       "id": "40-singles",
       "label": "40+ Singles",
-      "players": ["Sudheer", "Ambadas", "Sanish", "Ather", "Nataraj", "Srikanth T"]
+      "players": [
+        "Sudheer",
+        "Ambadas",
+        "Sanish",
+        "Ather",
+        "Nataraj",
+        "Srikanth T"
+      ]
     },
     {
       "id": "40-doubles",
       "label": "40+ Doubles",
-      "players": ["Ambadas & Badshah", "Durga & Nanda", "Vamsi & Zakir", "Sanish & Abdul", "Mahesh & Pradeep", "Raja & Kamal"]
+      "players": [
+        "Ambadas & Badshah",
+        "Durga & Nanda",
+        "Vamsi & Zakir",
+        "Sanish & Abdul",
+        "Mahesh & Pradeep",
+        "Raja & Kamal",
+        "7. Karthik & Dileep"
+      ]
     }
   ]
 }
-
