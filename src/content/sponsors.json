@@ -1,9 +1,9 @@
 {
   "items": [
     {
-      "role": "Title Sponsor",
-      "name": "Redbull",
-      "image": "/redbull.png",
+      "role": "Official Sponsor",
+      "name": "Dunlop",
+      "image": "dunlop-logo.jpeg",
       "cls": "pin-a"
     },
     {
